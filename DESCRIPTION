@@ -1,15 +1,15 @@
 Package: germs
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Generalised RNA Multivalency Scoring
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Faraway, R; Iosub, IA; Chakrabarti, AM;
+Maintainer: Rupert Faraway <rupert.faraway@gmail.com>
+Description: This package contains functions used to calculate the multivalency potential of k-mers within RNA sequences.
+License: MIT
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    Rcpp
+    Rcpp,
+    magrittr
 LinkingTo: Rcpp
 RoxygenNote: 7.2.1
