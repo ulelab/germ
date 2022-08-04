@@ -34,6 +34,13 @@ if(opt$window_size %% 2 == 0) {
 
 }
 
+if(opt$smoothing_size %% 2 == 0) {
+
+  message("Incrementing smoothing size by 1 to satisfy parity requirements.") # window_size must be odd!
+  opt$smoothing_size = opt$smoothing_size + 1
+
+}
+
 # Build scoring matrices -----------------------------------------
 
 hdm <- create_hamming_distance_matrix(opt$k_length)
