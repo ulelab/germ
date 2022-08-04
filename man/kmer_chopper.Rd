@@ -7,7 +7,7 @@
 kmer_chopper(input_seq, k_len)
 }
 \arguments{
-\item{input_seq}{A character string}
+\item{input_seq}{a character string}
 
 \item{k_len}{an integer specifying the length of the k-mer}
 }

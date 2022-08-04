@@ -10,18 +10,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// calculate_sliding_mean
-NumericVector calculate_sliding_mean(NumericVector iv, int ws);
-RcppExport SEXP _germs_calculate_sliding_mean(SEXP ivSEXP, SEXP wsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type iv(ivSEXP);
-    Rcpp::traits::input_parameter< int >::type ws(wsSEXP);
-    rcpp_result_gen = Rcpp::wrap(calculate_sliding_mean(iv, ws));
-    return rcpp_result_gen;
-END_RCPP
-}
 // kmer_chopper
 CharacterVector kmer_chopper(std::string input_seq, int k_len);
 RcppExport SEXP _germs_kmer_chopper(SEXP input_seqSEXP, SEXP k_lenSEXP) {
@@ -64,23 +52,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_hello
-List rcpp_hello();
-RcppExport SEXP _germs_rcpp_hello() {
+// calculate_sliding_mean
+NumericVector calculate_sliding_mean(NumericVector iv, int ws);
+RcppExport SEXP _germs_calculate_sliding_mean(SEXP ivSEXP, SEXP wsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello());
+    Rcpp::traits::input_parameter< NumericVector >::type iv(ivSEXP);
+    Rcpp::traits::input_parameter< int >::type ws(wsSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculate_sliding_mean(iv, ws));
+    return rcpp_result_gen;
+END_RCPP
+}
+// list_sliding_means
+List list_sliding_means(List ins, int window_size);
+RcppExport SEXP _germs_list_sliding_means(SEXP insSEXP, SEXP window_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type ins(insSEXP);
+    Rcpp::traits::input_parameter< int >::type window_size(window_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(list_sliding_means(ins, window_size));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_germs_calculate_sliding_mean", (DL_FUNC) &_germs_calculate_sliding_mean, 2},
     {"_germs_kmer_chopper", (DL_FUNC) &_germs_kmer_chopper, 2},
     {"_germs_calculate_kmer_multivalencies", (DL_FUNC) &_germs_calculate_kmer_multivalencies, 5},
     {"_germs_list_kmer_multivalencies", (DL_FUNC) &_germs_list_kmer_multivalencies, 5},
-    {"_germs_rcpp_hello", (DL_FUNC) &_germs_rcpp_hello, 0},
+    {"_germs_calculate_sliding_mean", (DL_FUNC) &_germs_calculate_sliding_mean, 2},
+    {"_germs_list_sliding_means", (DL_FUNC) &_germs_list_sliding_means, 2},
     {NULL, NULL, 0}
 };
 

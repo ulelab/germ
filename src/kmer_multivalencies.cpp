@@ -1,6 +1,25 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+//' Chops sequence into k-mers
+//'
+//' @param input_seq a character string
+//' @param k_len an integer specifying the length of the k-mer
+//'
+//' @return character vector of k-mers
+// [[Rcpp::export]]
+CharacterVector kmer_chopper(std::string input_seq, int k_len)
+{
+  int num_kmers = input_seq.length() - (k_len - 1);
+  CharacterVector output_kmers(num_kmers);
+
+  for (int i = 0; i < num_kmers; ++i) {
+    output_kmers[i] = input_seq.substr (i, k_len);
+  }
+
+  return(output_kmers);
+}
+
 //' Calculates k-mer multivalencies
 //'
 //' @param input_seq sequence string
@@ -101,7 +120,7 @@ List list_kmer_multivalencies(List ins, int k_len, int window_size, NumericMatri
 
   List output_list(ins.size());
 
-  for(int i = i; i < ins.size(); ++i){
+  for(int i = 0; i < ins.size(); ++i){
 
     output_list[i] = calculate_kmer_multivalencies(ins[i], k_len, window_size, hamming_distances, positional_distances);
 
