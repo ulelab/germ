@@ -31,7 +31,6 @@ NumericVector calculate_sliding_mean(NumericVector iv, int ws)
 //' @param window_size An integer specifying the size of the window within which to calculate mean values.
 //'
 //' @return list of numeric vectors containing the sliding window mean values.
-
 // [[Rcpp::export]]
 List list_sliding_means(List ins, int window_size)
 {

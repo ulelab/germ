@@ -37,14 +37,6 @@ list_kmer_multivalencies <- function(ins, k_len, window_size, hamming_distances,
     .Call(`_germs_list_kmer_multivalencies`, ins, k_len, window_size, hamming_distances, positional_distances)
 }
 
-#' Creates a list of sliding means.
-#'
-#' @param ins A list of numeric vectors (intended to be from  thelist_kmer_multivalencies function).
-#' @param window_size An integer specifying the size of the window within which to calculate mean values.
-#'
-#' @return list of numeric vectors containing the sliding window mean values.
-NULL
-
 #' Calculates sliding mean
 #'
 #' @param iv numeric vector
@@ -55,6 +47,12 @@ calculate_sliding_mean <- function(iv, ws) {
     .Call(`_germs_calculate_sliding_mean`, iv, ws)
 }
 
+#' Creates a list of sliding means.
+#'
+#' @param ins A list of numeric vectors (intended to be from  the list_kmer_multivalencies function).
+#' @param window_size An integer specifying the size of the window within which to calculate mean values.
+#'
+#' @return list of numeric vectors containing the sliding window mean values.
 list_sliding_means <- function(ins, window_size) {
     .Call(`_germs_list_sliding_means`, ins, window_size)
 }
