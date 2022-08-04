@@ -10,6 +10,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// kmer_chopper
+CharacterVector kmer_chopper(std::string input_seq, int k_len);
+RcppExport SEXP _germs_kmer_chopper(SEXP input_seqSEXP, SEXP k_lenSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type input_seq(input_seqSEXP);
+    Rcpp::traits::input_parameter< int >::type k_len(k_lenSEXP);
+    rcpp_result_gen = Rcpp::wrap(kmer_chopper(input_seq, k_len));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_hello
 List rcpp_hello();
 RcppExport SEXP _germs_rcpp_hello() {
@@ -22,6 +34,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_germs_kmer_chopper", (DL_FUNC) &_germs_kmer_chopper, 2},
     {"_germs_rcpp_hello", (DL_FUNC) &_germs_rcpp_hello, 0},
     {NULL, NULL, 0}
 };
