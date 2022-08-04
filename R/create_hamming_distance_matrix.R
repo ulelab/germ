@@ -19,7 +19,7 @@ create_hamming_distance_matrix <- function(k_len) {
   kmer_list <- as.list(data.frame(t(kmer_matrix), stringsAsFactors = F)) %>% append(list("N" = strsplit(n_kmer, "")[[1]]))
 
   # Calculate Hamming distances between all k-mer pairs and coerce to matrix.
-  hamming_matrix <- mapply(hamming_distance, rep(kmer_list, length(kmer_list)), rep(kmer_list, each = length(kmer_list))) %>%
+  hamming_matrix <- mapply(calculate_hamming_distance, rep(kmer_list, length(kmer_list)), rep(kmer_list, each = length(kmer_list))) %>%
     unname() %>%
     matrix(nrow = length(kmer_list), ncol = length(kmer_list))
 
