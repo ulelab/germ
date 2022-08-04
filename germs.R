@@ -2,6 +2,8 @@
 # library(germs)
 suppressPackageStartupMessages(library(Biostrings))
 suppressPackageStartupMessages(library(optparse))
+suppressPackageStartupMessages(library(parallel))
+
 
 
 option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "character", help = "Input FASTA file with sequences)"),
@@ -13,6 +15,13 @@ option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "ch
 
 opt_parser = OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
+
+
+# opt <- list(fasta = "~/Documents/projects/germs_test/data/longest_gencode29.fa",
+#             k_length = 5,
+#             window_size = 123,
+#             smoothing_size = 123,
+#             output = "~/Documents/projects/germs_test/output.tsv.gz")
 
 # Parameters --------------------------------------------------------------
 
@@ -38,8 +47,14 @@ sequences <- sequences[nchar(sequences) >= opt$window_size]
 # Calculate multivalency --------------------------------------------------
 
 all_kmer_multivalency <- list_kmer_multivalencies(sequences, opt$k_length, opt$window_size, hdm, pdv)
-all_local_multivalency <- list_sliding_means(all_kmer_multivalency, opt$smoothing_size)
+all_smoothed_multivalency <- list_sliding_means(all_kmer_multivalency, opt$smoothing_size)
 
 # Re-format results --------------------------------------------------
 
+output.df <- data.frame(kmer_multivalency = unlist(all_kmer_multivalency, use.names = FALSE),
+                        kmer = unlist(mclapply(sequences, kmer_chopper, k_len = opt$k_length, mc.cores = 4), use.names = FALSE),
+                        sequence_name = rep(names(sequences), times = nchar(sequences) - (opt$k_length - 1)))
+
+
+data.table::fwrite(output.df, file = opt$output, sep = "\t")
 
