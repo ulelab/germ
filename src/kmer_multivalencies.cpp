@@ -7,6 +7,7 @@ using namespace Rcpp;
 //' @param k_len an integer specifying the length of the k-mer
 //'
 //' @return character vector of k-mers
+//' @export
 // [[Rcpp::export]]
 CharacterVector kmer_chopper(std::string input_seq, int k_len)
 {
@@ -29,6 +30,7 @@ CharacterVector kmer_chopper(std::string input_seq, int k_len)
 //' @param positional_distances the positional distance vector
 //'
 //' @return a vector of k-mer multivalencies
+//' @export
 // [[Rcpp::export]]
 NumericVector calculate_kmer_multivalencies(std::string input_seq, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances)
 {
@@ -113,6 +115,7 @@ NumericVector calculate_kmer_multivalencies(std::string input_seq, int k_len, in
 //' @param positional_distances the positional distance vector
 //'
 //' @return a list of k-mer multivalencies
+//' @export
 // [[Rcpp::export]]
 List list_kmer_multivalencies(List ins, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances)
 {

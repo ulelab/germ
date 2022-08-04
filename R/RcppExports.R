@@ -7,6 +7,7 @@
 #' @param k_len an integer specifying the length of the k-mer
 #'
 #' @return character vector of k-mers
+#' @export
 kmer_chopper <- function(input_seq, k_len) {
     .Call(`_germs_kmer_chopper`, input_seq, k_len)
 }
@@ -20,6 +21,7 @@ kmer_chopper <- function(input_seq, k_len) {
 #' @param positional_distances the positional distance vector
 #'
 #' @return a vector of k-mer multivalencies
+#' @export
 calculate_kmer_multivalencies <- function(input_seq, k_len, window_size, hamming_distances, positional_distances) {
     .Call(`_germs_calculate_kmer_multivalencies`, input_seq, k_len, window_size, hamming_distances, positional_distances)
 }
@@ -33,6 +35,7 @@ calculate_kmer_multivalencies <- function(input_seq, k_len, window_size, hamming
 #' @param positional_distances the positional distance vector
 #'
 #' @return a list of k-mer multivalencies
+#' @export
 list_kmer_multivalencies <- function(ins, k_len, window_size, hamming_distances, positional_distances) {
     .Call(`_germs_list_kmer_multivalencies`, ins, k_len, window_size, hamming_distances, positional_distances)
 }
@@ -43,6 +46,7 @@ list_kmer_multivalencies <- function(ins, k_len, window_size, hamming_distances,
 #' @param ws window size
 #'
 #' @return numeric vector of sliding means
+#' @export
 calculate_sliding_mean <- function(iv, ws) {
     .Call(`_germs_calculate_sliding_mean`, iv, ws)
 }
@@ -53,6 +57,7 @@ calculate_sliding_mean <- function(iv, ws) {
 #' @param window_size An integer specifying the size of the window within which to calculate mean values.
 #'
 #' @return list of numeric vectors containing the sliding window mean values.
+#' @export
 list_sliding_means <- function(ins, window_size) {
     .Call(`_germs_list_sliding_means`, ins, window_size)
 }
