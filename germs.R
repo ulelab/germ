@@ -28,6 +28,7 @@ suppressPackageStartupMessages(library(logger))
 log_threshold(opt$logging)
 logger::log_info("Started")
 
+message()
 if(is.null(opt$fasta)) {
   logger::log_fatal("Please specify an input FASTA file with --fasta")
   quit()
@@ -48,12 +49,14 @@ if(opt$smoothing_size %% 2 == 0) {
   logger::log_warn("Incrementing smoothing size by 1 to {opt$smoothing_size} satisfy parity requirements.") # smoothing_size must be odd!
 }
 
+message()
 logger::log_info("Input FASTA file          : {opt$fasta}")
 logger::log_info("k-mer length              : {opt$k_length}")
 logger::log_info("Multivalency window size  : {opt$window_size}")
 logger::log_info("Smoothing window size     : {opt$smoothing_size}")
 logger::log_info("Output TSV filename       : {opt$output}")
 logger::log_info("Logging level             : {opt$logging}")
+message()
 
 # Build scoring matrices -----------------------------------------
 logger::log_info("Building scoring matrices")
@@ -109,5 +112,6 @@ output.df <- data.table::rbindlist(all_kmer_multivalency)
 logger::log_info("Writing out k-mer multivalencies")
 data.table::fwrite(output.df, file = opt$output, sep = "\t")
 
+message()
 logger::log_info("Finished")
 
