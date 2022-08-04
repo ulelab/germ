@@ -10,6 +10,5 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     Rcpp,
-    magrittr
 LinkingTo: Rcpp
 RoxygenNote: 7.2.1

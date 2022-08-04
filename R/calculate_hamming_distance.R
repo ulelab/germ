@@ -6,8 +6,6 @@
 #' @return Hamming distance as an integer.
 #' @export
 #'
-#' @examples
-#'
 calculate_hamming_distance <- function(x, y){
 
   # Calcuates the Hamming distance between two equal vectors of individual nucleotides (i.e c("A", "G", "C"), not "AGC").

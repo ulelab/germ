@@ -3,10 +3,8 @@
 #' @param k_len an integer specifying the length of the k-mer
 #'
 #' @return scaled Hamming distance matrix
-#' @import magrittr
 #' @export
 #'
-#' @examples
 create_hamming_distance_matrix <- function(k_len) {
 
   # Generate all k-mers.
@@ -16,15 +14,25 @@ create_hamming_distance_matrix <- function(k_len) {
 
   # In order to use Ns for padding, we need to create an N kmer, which will end up set to 0.
   kmer_strings <- c(do.call(paste0, c(kmer_matrix)), n_kmer)
-  kmer_list <- as.list(data.frame(t(kmer_matrix), stringsAsFactors = F)) %>% append(list("N" = strsplit(n_kmer, "")[[1]]))
+  # kmer_list <- as.list(data.frame(t(kmer_matrix), stringsAsFactors = F)) %>% append(list("N" = strsplit(n_kmer, "")[[1]]))
+  kmer_list <- c(as.list(data.frame(t(kmer_matrix), stringsAsFactors = F)),
+                 list("N" = strsplit(n_kmer, "")[[1]]))
 
   # Calculate Hamming distances between all k-mer pairs and coerce to matrix.
-  hamming_matrix <- mapply(calculate_hamming_distance, rep(kmer_list, length(kmer_list)), rep(kmer_list, each = length(kmer_list))) %>%
-    unname() %>%
-    matrix(nrow = length(kmer_list), ncol = length(kmer_list))
+  # hamming_matrix <- mapply(calculate_hamming_distance, rep(kmer_list, length(kmer_list)), rep(kmer_list, each = length(kmer_list))) %>%
+    # unname() %>%
+    # matrix(nrow = length(kmer_list), ncol = length(kmer_list))
 
-  colnames(hamming_matrix) <- kmer_strings
-  rownames(hamming_matrix) <- kmer_strings
+  # colnames(hamming_matrix) <- kmer_strings
+  # rownames(hamming_matrix) <- kmer_strings
+
+  hamming_matrix <- mapply(calculate_hamming_distance,
+                           rep(kmer_list, times = length(kmer_list)),
+                           rep(kmer_list, each = length(kmer_list)))
+  hamming_matrix <- matrix(hamming_matrix,
+                           nrow = length(kmer_list),
+                           ncol = length(kmer_list),
+                           dimnames = list(kmer_strings, kmer_strings))
 
   # This scoring becomes more meaningless as k becomes small?
   # Tweak me if using larger values?
