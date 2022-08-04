@@ -26,6 +26,21 @@ calculate_kmer_multivalencies <- function(input_seq, k_len, window_size, hamming
     .Call(`_germs_calculate_kmer_multivalencies`, input_seq, k_len, window_size, hamming_distances, positional_distances)
 }
 
+#' Calculates k-mer multivalencies with tidy output
+#'
+#' @param input_seq sequence string
+#' @param input_seq_name sequence string name (e.g. transcript id)
+#' @param k_len an integer specifying the length of the k-mer
+#' @param window_size integer specifying window_size
+#' @param hamming_distances the Hamming distance matrix
+#' @param positional_distances the positional distance vector
+#'
+#' @return a data frame of k-mer multivalencies
+#' @export
+calculate_kmer_multivalencies_df <- function(input_seq, input_seq_name, k_len, window_size, hamming_distances, positional_distances) {
+    .Call(`_germs_calculate_kmer_multivalencies_df`, input_seq, input_seq_name, k_len, window_size, hamming_distances, positional_distances)
+}
+
 #' Get list of k-mer multivalencies
 #'
 #' @param ins list of ??
