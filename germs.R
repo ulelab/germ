@@ -1,10 +1,6 @@
 #!/usr/bin/env Rscript
-# library(germs)
-suppressPackageStartupMessages(library(Biostrings))
+
 suppressPackageStartupMessages(library(optparse))
-suppressPackageStartupMessages(library(parallel))
-
-
 
 option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "character", help = "Input FASTA file with sequences)"),
                     make_option(c("-k", "--k_length"), action = "store", type = "integer", help = "k-mer length [default: %default]", default = 5),
@@ -16,12 +12,16 @@ option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "ch
 opt_parser = OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
+suppressPackageStartupMessages(library(germs))
+suppressPackageStartupMessages(library(Biostrings))
+suppressPackageStartupMessages(library(parallel))
 
-# opt <- list(fasta = "~/Documents/projects/germs_test/data/longest_gencode29.fa",
-#             k_length = 5,
-#             window_size = 123,
-#             smoothing_size = 123,
-#             output = "~/Documents/projects/germs_test/output.tsv.gz")
+opt <- list(fasta = "test_data/test.fasta",
+            k_length = 5,
+            window_size = 123,
+            smoothing_size = 123,
+            output = "output.tsv.gz",
+            verbose = TRUE)
 
 # Parameters --------------------------------------------------------------
 
@@ -53,15 +53,38 @@ sequences <- sequences[nchar(sequences) >= opt$window_size]
 
 # Calculate multivalency --------------------------------------------------
 
-all_kmer_multivalency <- list_kmer_multivalencies(sequences, opt$k_length, opt$window_size, hdm, pdv)
-all_smoothed_multivalency <- list_sliding_means(all_kmer_multivalency, opt$smoothing_size)
+# all_kmer_multivalency <- list_kmer_multivalencies(sequences, opt$k_length, opt$window_size, hdm, pdv)
+# all_smoothed_multivalency <- list_sliding_means(all_kmer_multivalency, opt$smoothing_size)
 
 # Re-format results --------------------------------------------------
 
-output.df <- data.frame(kmer_multivalency = unlist(all_kmer_multivalency, use.names = FALSE),
-                        kmer = unlist(mclapply(sequences, kmer_chopper, k_len = opt$k_length, mc.cores = 4), use.names = FALSE),
-                        sequence_name = rep(names(sequences), times = nchar(sequences) - (opt$k_length - 1)))
+# output.df <- data.frame(kmer_multivalency = unlist(all_kmer_multivalency, use.names = FALSE),
+#                         kmer = unlist(mclapply(sequences, kmer_chopper, k_len = opt$k_length, mc.cores = 4), use.names = FALSE),
+#                         sequence_name = rep(names(sequences), times = nchar(sequences) - (opt$k_length - 1)))
 
+
+# DataFrame version --------------------------------------------------
+
+# test <- calculate_kmer_multivalencies(sequences[1], opt$k_length, opt$window_size, hdm, pdv)
+# test2 <- calculate_kmer_multivalencies_df(sequences[1], names(sequences)[1], opt$k_length, opt$window_size, hdm, pdv)
+
+# Base R version - 5.547 sec elapsed
+library(tictoc)
+tic()
+all_kmer_multivalency <- lapply(seq_along(sequences), function(i) {
+  calculate_kmer_multivalencies_df(sequences[i], names(sequences)[i], opt$k_length, opt$window_size, hdm, pdv)
+})
+output.df <- do.call(rbind, all_kmer_multivalency)
+toc()
+
+
+# data.table version is faster - 3.549 sec elapsed
+tic()
+all_kmer_multivalency <- lapply(seq_along(sequences), function(i) {
+  data.table::as.data.table(calculate_kmer_multivalencies_df(sequences[i], names(sequences)[i], opt$k_length, opt$window_size, hdm, pdv))
+})
+output.df <- data.table::rbindlist(all_kmer_multivalency)
+toc()
 
 data.table::fwrite(output.df, file = opt$output, sep = "\t")
 
