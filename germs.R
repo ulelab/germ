@@ -7,7 +7,7 @@ option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "ch
                     make_option(c("-w", "--window_size"), action = "store", type = "integer", help = "Window size [default: %default]", default = 123),
                     make_option(c("-s", "--smoothing_size"), action = "store", type = "integer", help = "Smoothing window size [default: %default]", default = 123),
                     make_option(c("-o", "--output"), action = "store", type = "character", help = "Output filename"),
-                    make_option(c("", "--verbose"), action = "store_true", type = "logical", help = "Verbose", default = FALSE))
+                    make_option(c("-l", "--logging"), action = "store", type = "character", help = "Logging level [default : %default]", default = "INFO"))
 
 opt_parser = OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
@@ -15,39 +15,53 @@ opt <- parse_args(opt_parser)
 suppressPackageStartupMessages(library(germs))
 suppressPackageStartupMessages(library(Biostrings))
 suppressPackageStartupMessages(library(parallel))
+suppressPackageStartupMessages(library(logger))
 
-opt <- list(fasta = "test_data/test.fasta",
-            k_length = 5,
-            window_size = 123,
-            smoothing_size = 123,
-            output = "output.tsv.gz",
-            verbose = TRUE)
+# opt <- list(fasta = "test_data/test.fasta",
+#             k_length = 5,
+#             window_size = 123,
+#             smoothing_size = 123,
+#             output = "output.tsv.gz",
+#             verbose = TRUE)
 
 # Parameters --------------------------------------------------------------
+log_threshold(opt$logging)
+logger::log_info("Started")
 
-if(opt$verbose) print(opt)
+if(is.null(opt$fasta)) {
+  logger::log_fatal("Please specify an input FASTA file with --fasta")
+  quit()
+}
+
+if(is.null(opt$output)) {
+  logger::log_fatal("Please specify an output TSV filename with --output")
+  quit()
+}
 
 if(opt$window_size %% 2 == 0) {
-
-  message("Incrementing window size by 1 to satisfy parity requirements.") # window_size must be odd!
   opt$window_size = opt$window_size + 1
-
+  logger::log_warn("Incrementing window size by 1 to {opt$window_size} to satisfy parity requirements.") # window_size must be odd!
 }
 
 if(opt$smoothing_size %% 2 == 0) {
-
-  message("Incrementing smoothing size by 1 to satisfy parity requirements.") # window_size must be odd!
   opt$smoothing_size = opt$smoothing_size + 1
-
+  logger::log_warn("Incrementing smoothing size by 1 to {opt$smoothing_size} satisfy parity requirements.") # smoothing_size must be odd!
 }
 
-# Build scoring matrices -----------------------------------------
+logger::log_info("Input FASTA file          : {opt$fasta}")
+logger::log_info("k-mer length              : {opt$k_length}")
+logger::log_info("Multivalency window size  : {opt$window_size}")
+logger::log_info("Smoothing window size     : {opt$smoothing_size}")
+logger::log_info("Output TSV filename       : {opt$output}")
+logger::log_info("Logging level             : {opt$logging}")
 
+# Build scoring matrices -----------------------------------------
+logger::log_info("Building scoring matrices")
 hdm <- create_hamming_distance_matrix(opt$k_length)
 pdv <- create_positional_distance_vector(opt$window_size, opt$k_length)
 
 # Load sequences ----------------------------------------------------------
-
+logger::log_info("Loading sequences")
 sequences <- as.character(readDNAStringSet(opt$fasta))
 sequences <- sequences[nchar(sequences) >= opt$window_size]
 
@@ -62,29 +76,38 @@ sequences <- sequences[nchar(sequences) >= opt$window_size]
 #                         kmer = unlist(mclapply(sequences, kmer_chopper, k_len = opt$k_length, mc.cores = 4), use.names = FALSE),
 #                         sequence_name = rep(names(sequences), times = nchar(sequences) - (opt$k_length - 1)))
 
-
-# DataFrame version --------------------------------------------------
+# ==========
+# Rcpp DataFrame version --------------------------------------------------
+# ==========
 
 # test <- calculate_kmer_multivalencies(sequences[1], opt$k_length, opt$window_size, hdm, pdv)
 # test2 <- calculate_kmer_multivalencies_df(sequences[1], names(sequences)[1], opt$k_length, opt$window_size, hdm, pdv)
 
 # Base R version - 5.547 sec elapsed
-library(tictoc)
-tic()
-all_kmer_multivalency <- lapply(seq_along(sequences), function(i) {
-  calculate_kmer_multivalencies_df(sequences[i], names(sequences)[i], opt$k_length, opt$window_size, hdm, pdv)
-})
-output.df <- do.call(rbind, all_kmer_multivalency)
-toc()
-
+# library(tictoc)
+# tic()
+# all_kmer_multivalency <- lapply(seq_along(sequences), function(i) {
+#   calculate_kmer_multivalencies_df(sequences[i], names(sequences)[i], opt$k_length, opt$window_size, hdm, pdv)
+# })
+# output.df <- do.call(rbind, all_kmer_multivalency)
+# toc()
 
 # data.table version is faster - 3.549 sec elapsed
-tic()
+# tic()
+logger::log_info("Calculating k-mer multivalencies")
 all_kmer_multivalency <- lapply(seq_along(sequences), function(i) {
-  data.table::as.data.table(calculate_kmer_multivalencies_df(sequences[i], names(sequences)[i], opt$k_length, opt$window_size, hdm, pdv))
+  data.table::as.data.table(calculate_kmer_multivalencies_df(sequences[i],
+                                                             names(sequences)[i],
+                                                             opt$k_length,
+                                                             opt$window_size,
+                                                             hdm,
+                                                             pdv))
 })
 output.df <- data.table::rbindlist(all_kmer_multivalency)
-toc()
+# toc()
 
+logger::log_info("Writing out k-mer multivalencies")
 data.table::fwrite(output.df, file = opt$output, sep = "\t")
+
+logger::log_info("Finished")
 
