@@ -1,4 +1,4 @@
-#' Title
+#' Calculates Hamming distance between two vectors
 #'
 #' @param x A character vector where each element is of length 1.
 #' @param y A character vector of the same length as x where each element is of length 1.

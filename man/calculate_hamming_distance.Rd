@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_hamming_distance.R
 \name{calculate_hamming_distance}
 \alias{calculate_hamming_distance}
-\title{Title}
+\title{Calculates Hamming distance between two vectors}
 \usage{
 calculate_hamming_distance(x, y)
 }
@@ -15,5 +15,8 @@ calculate_hamming_distance(x, y)
 Hamming distance as an integer.
 }
 \description{
-Title
+Calculates Hamming distance between two vectors
+}
+\examples{
+
 }
