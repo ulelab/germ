@@ -34,6 +34,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calculate_kmer_multivalencies
+NumericVector calculate_kmer_multivalencies(std::string input_seq, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances);
+RcppExport SEXP _germs_calculate_kmer_multivalencies(SEXP input_seqSEXP, SEXP k_lenSEXP, SEXP window_sizeSEXP, SEXP hamming_distancesSEXP, SEXP positional_distancesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type input_seq(input_seqSEXP);
+    Rcpp::traits::input_parameter< int >::type k_len(k_lenSEXP);
+    Rcpp::traits::input_parameter< int >::type window_size(window_sizeSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type hamming_distances(hamming_distancesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type positional_distances(positional_distancesSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculate_kmer_multivalencies(input_seq, k_len, window_size, hamming_distances, positional_distances));
+    return rcpp_result_gen;
+END_RCPP
+}
 // list_kmer_multivalencies
 List list_kmer_multivalencies(List ins, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances);
 RcppExport SEXP _germs_list_kmer_multivalencies(SEXP insSEXP, SEXP k_lenSEXP, SEXP window_sizeSEXP, SEXP hamming_distancesSEXP, SEXP positional_distancesSEXP) {
@@ -63,6 +78,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_germs_calculate_sliding_mean", (DL_FUNC) &_germs_calculate_sliding_mean, 2},
     {"_germs_kmer_chopper", (DL_FUNC) &_germs_kmer_chopper, 2},
+    {"_germs_calculate_kmer_multivalencies", (DL_FUNC) &_germs_calculate_kmer_multivalencies, 5},
     {"_germs_list_kmer_multivalencies", (DL_FUNC) &_germs_list_kmer_multivalencies, 5},
     {"_germs_rcpp_hello", (DL_FUNC) &_germs_rcpp_hello, 0},
     {NULL, NULL, 0}

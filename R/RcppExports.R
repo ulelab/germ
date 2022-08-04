@@ -21,6 +21,19 @@ kmer_chopper <- function(input_seq, k_len) {
     .Call(`_germs_kmer_chopper`, input_seq, k_len)
 }
 
+#' Calculates k-mer multivalencies
+#'
+#' @param input_seq sequence string
+#' @param k_len an integer specifying the length of the k-mer
+#' @param window_size integer specifying window_size
+#' @param hamming_distances the Hamming distance matrix
+#' @param positional_distances the positional distance vector
+#'
+#' @return a vector of k-mer multivalencies
+calculate_kmer_multivalencies <- function(input_seq, k_len, window_size, hamming_distances, positional_distances) {
+    .Call(`_germs_calculate_kmer_multivalencies`, input_seq, k_len, window_size, hamming_distances, positional_distances)
+}
+
 #' Get list of k-mer multivalencies
 #'
 #' @param ins list of ??

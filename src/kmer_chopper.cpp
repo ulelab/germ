@@ -3,7 +3,7 @@ using namespace Rcpp;
 
 //' Chops sequence into k-mers
 //'
-//' @param input_seq A character string
+//' @param input_seq a character string
 //' @param k_len an integer specifying the length of the k-mer
 //'
 //' @return character vector of k-mers
