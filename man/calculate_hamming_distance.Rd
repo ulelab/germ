@@ -17,6 +17,3 @@ Hamming distance as an integer.
 \description{
 Calculates Hamming distance between two vectors
 }
-\examples{
-
-}

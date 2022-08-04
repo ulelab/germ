@@ -1,10 +1,8 @@
 #!/usr/bin/env Rscript
-# library(germs)
+library(germs)
 suppressPackageStartupMessages(library(Biostrings))
 suppressPackageStartupMessages(library(optparse))
 suppressPackageStartupMessages(library(parallel))
-
-
 
 option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "character", help = "Input FASTA file with sequences)"),
                     make_option(c("-k", "--k_length"), action = "store", type = "integer", help = "k-mer length [default: %default]", default = 5),
@@ -50,6 +48,10 @@ pdv <- create_positional_distance_vector(opt$window_size, opt$k_length)
 
 sequences <- as.character(readDNAStringSet(opt$fasta))
 sequences <- sequences[nchar(sequences) >= opt$window_size]
+
+
+test_sequence <- "ACGTAGTAGCTAGCTAGCTACGATACGTAGTAGCTAGCTAGCTACGATACGTAGTAGCTAGCTAGCTACGATACGTAGTAGCTAGCTAGCTACGATNACGTAGTAGCTAGCTAGCTACGATACGTAGTAGCTAGCTAGCTACGATACGTAGTAGCTAGCTAGCTACGATACGTAGTAGCTAGCTAGCTACGAT"
+calculate_kmer_multivalencies(test_sequence, opt$k_length, opt$window_size, hdm, pdv)
 
 # Calculate multivalency --------------------------------------------------
 
