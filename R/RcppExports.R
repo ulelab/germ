@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rcpp_hello <- function() {
-    .Call(`_germs2_rcpp_hello`)
+    .Call('_germs_rcpp_hello', PACKAGE = 'germs')
 }
 

@@ -1,4 +1,4 @@
-Package: germs2
+Package: germs
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
@@ -11,3 +11,4 @@ Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.3)
 LinkingTo: Rcpp
+RoxygenNote: 7.2.1
