@@ -18,4 +18,5 @@ dependencies:
   - conda-forge::r-ggthemes=4.2.4
   - conda-forge::r-cowplot=1.1.1
   - conda-forge::r-patchwork=1.1.1
+  - conda-forge::r-logger=0.2.2
   - bioconda::bioconductor-biostrings=2.62.0
