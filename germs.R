@@ -25,7 +25,7 @@ suppressPackageStartupMessages(library(logger))
 #             verbose = TRUE)
 
 # Parameters --------------------------------------------------------------
-log_threshold(opt$logging)
+logger::log_threshold(opt$logging)
 logger::log_info("Started")
 
 message()
