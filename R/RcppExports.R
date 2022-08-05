@@ -26,6 +26,17 @@ calculate_kmer_multivalencies <- function(input_seq, k_len, window_size, hamming
     .Call(`_germs_calculate_kmer_multivalencies`, input_seq, k_len, window_size, hamming_distances, positional_distances)
 }
 
+#' Calculates sliding mean and pads ends with 0
+#'
+#' @param iv numeric vector
+#' @param ws sliding window size
+#'
+#' @return numeric vector of sliding means padded with 0
+#' @export
+calculate_padded_sliding_mean <- function(iv, ws) {
+    .Call(`_germs_calculate_padded_sliding_mean`, iv, ws)
+}
+
 #' Calculates k-mer multivalencies with tidy output
 #'
 #' @param input_seq sequence string

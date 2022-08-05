@@ -105,6 +105,39 @@ NumericVector calculate_kmer_multivalencies(std::string input_seq, int k_len, in
   return(output_vector);
 }
 
+#include <Rcpp.h>
+using namespace Rcpp;
+
+//' Calculates sliding mean and pads ends with 0
+//'
+//' @param iv numeric vector
+//' @param ws sliding window size
+//'
+//' @return numeric vector of sliding means padded with 0
+//' @export
+// [[Rcpp::export]]
+NumericVector calculate_padded_sliding_mean(NumericVector iv, int ws)
+{
+  // Simple sliding window function to compute means of vector iv in windows of size ws. Returns vector that is ws - 1 shorter than the input vector.
+  int n = iv.size();
+  NumericVector out(n - (ws - 1));
+
+  NumericVector wv = iv[seq(0, ws - 1)];
+  double sv = sum(wv);
+  out[0] = sv/ws;
+
+  for(int i = 1; i < n - (ws - 1); ++i) {
+    sv += iv[i + ws - 1] - iv[i-1];
+    out[i] = sv/ws;
+  }
+
+  NumericVector pad(iv.size());
+  for(int i = (ws - 1)/2; i < iv.size() - (ws - 1)/2; ++i) {
+    pad[i] = out[i - (ws - 1)/2];
+  }
+  return pad;
+}
+
 //' Calculates k-mer multivalencies with tidy output
 //'
 //' @param input_seq sequence string

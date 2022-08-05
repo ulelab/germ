@@ -37,6 +37,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calculate_padded_sliding_mean
+NumericVector calculate_padded_sliding_mean(NumericVector iv, int ws);
+RcppExport SEXP _germs_calculate_padded_sliding_mean(SEXP ivSEXP, SEXP wsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type iv(ivSEXP);
+    Rcpp::traits::input_parameter< int >::type ws(wsSEXP);
+    rcpp_result_gen = Rcpp::wrap(calculate_padded_sliding_mean(iv, ws));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calculate_kmer_multivalencies_df
 DataFrame calculate_kmer_multivalencies_df(std::string input_seq, std::string input_seq_name, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances);
 RcppExport SEXP _germs_calculate_kmer_multivalencies_df(SEXP input_seqSEXP, SEXP input_seq_nameSEXP, SEXP k_lenSEXP, SEXP window_sizeSEXP, SEXP hamming_distancesSEXP, SEXP positional_distancesSEXP) {
@@ -96,6 +108,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_germs_kmer_chopper", (DL_FUNC) &_germs_kmer_chopper, 2},
     {"_germs_calculate_kmer_multivalencies", (DL_FUNC) &_germs_calculate_kmer_multivalencies, 5},
+    {"_germs_calculate_padded_sliding_mean", (DL_FUNC) &_germs_calculate_padded_sliding_mean, 2},
     {"_germs_calculate_kmer_multivalencies_df", (DL_FUNC) &_germs_calculate_kmer_multivalencies_df, 6},
     {"_germs_list_kmer_multivalencies", (DL_FUNC) &_germs_list_kmer_multivalencies, 5},
     {"_germs_calculate_sliding_mean", (DL_FUNC) &_germs_calculate_sliding_mean, 2},
