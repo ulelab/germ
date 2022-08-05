@@ -121,9 +121,10 @@ all_kmer_multivalency <- mclapply(seq_along(sequences), function(i) {
                                                              names(sequences)[i],
                                                              opt$k_length,
                                                              opt$window_size,
+                                                             opt$smoothing_size,
                                                              hdm,
                                                              pdv))
-}, mc.cores = opt$threads)
+  }, mc.cores = opt$threads)
 output.df <- data.table::rbindlist(all_kmer_multivalency)
 # toc()
 
