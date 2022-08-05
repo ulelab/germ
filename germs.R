@@ -7,6 +7,7 @@ option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "ch
                     make_option(c("-w", "--window_size"), action = "store", type = "integer", help = "Window size [default: %default]", default = 123),
                     make_option(c("-s", "--smoothing_size"), action = "store", type = "integer", help = "Smoothing window size [default: %default]", default = 123),
                     make_option(c("-o", "--output"), action = "store", type = "character", help = "Output filename"),
+                    make_option(c("-t", "--threads"), action = "store", type = "integer", help = "Number of threads [default : %default]", default = 4),
                     make_option(c("-l", "--logging"), action = "store", type = "character", help = "Logging level [default : %default]", default = "INFO"))
 
 opt_parser = OptionParser(option_list = option_list)
@@ -19,10 +20,11 @@ suppressPackageStartupMessages(library(logger))
 
 # opt <- list(fasta = "test_data/test.fasta",
 #             k_length = 5,
-#             window_size = 123,
-#             smoothing_size = 123,
+#             window_size = 122,
+#             smoothing_size = 122,
 #             output = "output.tsv.gz",
-#             verbose = TRUE)
+#             threads = 4,
+#             logging = "INFO")
 
 # Parameters --------------------------------------------------------------
 logger::log_threshold(opt$logging)
@@ -50,12 +52,14 @@ if(opt$smoothing_size %% 2 == 0) {
 }
 
 message()
+logger::log_info("Logging level             : {opt$logging}")
+logger::log_info("Number of threads         : {opt$threads}")
+message()
 logger::log_info("Input FASTA file          : {opt$fasta}")
 logger::log_info("k-mer length              : {opt$k_length}")
 logger::log_info("Multivalency window size  : {opt$window_size}")
 logger::log_info("Smoothing window size     : {opt$smoothing_size}")
 logger::log_info("Output TSV filename       : {opt$output}")
-logger::log_info("Logging level             : {opt$logging}")
 message()
 
 # Build scoring matrices -----------------------------------------
@@ -65,12 +69,26 @@ pdv <- create_positional_distance_vector(opt$window_size, opt$k_length)
 
 # Load sequences ----------------------------------------------------------
 logger::log_info("Loading sequences")
-sequences <- as.character(readDNAStringSet(opt$fasta))
+sequences <- as.character(Biostrings::readDNAStringSet(opt$fasta))
 sequences <- sequences[nchar(sequences) >= opt$window_size]
 
 # Calculate multivalency --------------------------------------------------
 
+# tic()
 # all_kmer_multivalency <- list_kmer_multivalencies(sequences, opt$k_length, opt$window_size, hdm, pdv)
+# toc()
+#
+# tic()
+# all_kmer_multivalency <- mclapply(seq_along(sequences), function(i) {
+#   data.table::as.data.table(calculate_kmer_multivalencies_df(sequences[i],
+#                                                              names(sequences)[i],
+#                                                              opt$k_length,
+#                                                              opt$window_size,
+#                                                              hdm,
+#                                                              pdv))
+# }, mc.cores = opt$threads)
+# toc()
+
 # all_smoothed_multivalency <- list_sliding_means(all_kmer_multivalency, opt$smoothing_size)
 
 # Re-format results --------------------------------------------------
@@ -98,14 +116,14 @@ sequences <- sequences[nchar(sequences) >= opt$window_size]
 # data.table version is faster - 3.549 sec elapsed
 # tic()
 logger::log_info("Calculating k-mer multivalencies")
-all_kmer_multivalency <- lapply(seq_along(sequences), function(i) {
+all_kmer_multivalency <- mclapply(seq_along(sequences), function(i) {
   data.table::as.data.table(calculate_kmer_multivalencies_df(sequences[i],
                                                              names(sequences)[i],
                                                              opt$k_length,
                                                              opt$window_size,
                                                              hdm,
                                                              pdv))
-})
+}, mc.cores = opt$threads)
 output.df <- data.table::rbindlist(all_kmer_multivalency)
 # toc()
 
