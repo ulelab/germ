@@ -9,6 +9,7 @@ calculate_kmer_multivalencies_df(
   input_seq_name,
   k_len,
   window_size,
+  smoothing_size,
   hamming_distances,
   positional_distances
 )
@@ -25,6 +26,8 @@ calculate_kmer_multivalencies_df(
 \item{hamming_distances}{the Hamming distance matrix}
 
 \item{positional_distances}{the positional distance vector}
+
+\item{smoothing}{size integer specifying smoothingwindow_size}
 }
 \value{
 a data frame of k-mer multivalencies

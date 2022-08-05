@@ -105,8 +105,32 @@ NumericVector calculate_kmer_multivalencies(std::string input_seq, int k_len, in
   return(output_vector);
 }
 
-#include <Rcpp.h>
-using namespace Rcpp;
+//' Get list of k-mer multivalencies
+//'
+//' @param ins list of ??
+//' @param k_len an integer specifying the length of the k-mer
+//' @param window_size integer specifying window_size
+//' @param hamming_distances the Hamming distance matrix
+//' @param positional_distances the positional distance vector
+//'
+//' @return a list of k-mer multivalencies
+//' @export
+// [[Rcpp::export]]
+List list_kmer_multivalencies(List ins, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances)
+{
+  // Dedicated replacement for lapply. This is faster when using a larger number of input sequences.
+
+  List output_list(ins.size());
+
+  for(int i = 0; i < ins.size(); ++i){
+
+    output_list[i] = calculate_kmer_multivalencies(ins[i], k_len, window_size, hamming_distances, positional_distances);
+
+  }
+
+  return(output_list);
+
+}
 
 //' Calculates sliding mean and pads ends with 0
 //'
@@ -144,13 +168,14 @@ NumericVector calculate_padded_sliding_mean(NumericVector iv, int ws)
 //' @param input_seq_name sequence string name (e.g. transcript id)
 //' @param k_len an integer specifying the length of the k-mer
 //' @param window_size integer specifying window_size
+//' @param smoothing size integer specifying smoothingwindow_size
 //' @param hamming_distances the Hamming distance matrix
 //' @param positional_distances the positional distance vector
 //'
 //' @return a data frame of k-mer multivalencies
 //' @export
 // [[Rcpp::export]]
-DataFrame calculate_kmer_multivalencies_df(std::string input_seq, std::string input_seq_name, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances)
+DataFrame calculate_kmer_multivalencies_df(std::string input_seq, std::string input_seq_name, int k_len, int window_size, int smoothing_size, NumericMatrix hamming_distances, NumericVector positional_distances)
 {
   // First, split the input string up into k-mers, then convert those k-mers into their indices on the Hamming distance matrix.
 
@@ -226,38 +251,16 @@ DataFrame calculate_kmer_multivalencies_df(std::string input_seq, std::string in
     seqnames[i] = input_seq_name;
   }
 
+  // Calculate sliding mean of scores
+  NumericVector smoothed_vector = input_kmers.size();
+  smoothed_vector = calculate_padded_sliding_mean(output_vector, smoothing_size);
+
   DataFrame df = DataFrame::create(Named("sequence_name") = seqnames,
                                    Named("kmer") = input_kmers,
-                                   Named("kmer_multivalency") = output_vector);
+                                   Named("kmer_multivalency") = output_vector,
+                                   Named("smoothed_kmer_multivalency") = smoothed_vector);
 
   return(df);
-}
-
-//' Get list of k-mer multivalencies
-//'
-//' @param ins list of ??
-//' @param k_len an integer specifying the length of the k-mer
-//' @param window_size integer specifying window_size
-//' @param hamming_distances the Hamming distance matrix
-//' @param positional_distances the positional distance vector
-//'
-//' @return a list of k-mer multivalencies
-//' @export
-// [[Rcpp::export]]
-List list_kmer_multivalencies(List ins, int k_len, int window_size, NumericMatrix hamming_distances, NumericVector positional_distances)
-{
-  // Dedicated replacement for lapply. This is faster when using a larger number of input sequences.
-
-  List output_list(ins.size());
-
-  for(int i = 0; i < ins.size(); ++i){
-
-    output_list[i] = calculate_kmer_multivalencies(ins[i], k_len, window_size, hamming_distances, positional_distances);
-
-  }
-
-  return(output_list);
-
 }
 
 
