@@ -164,7 +164,8 @@ invisible(lapply(tx.v, function(x) {
                          k_len = opt$k_length,
                          seq = sequences,
                          seq_name = x,
-                         outdir = opt$plot_folder)
+                         outdir = opt$plot_folder,
+                         annotate_max = TRUE)
 
 }))
 

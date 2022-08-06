@@ -10,7 +10,8 @@ plot_kmer_multivalency(
   seq,
   seq_name,
   outdir,
-  interactive = FALSE
+  interactive = FALSE,
+  annotate_max = FALSE
 )
 }
 \arguments{
