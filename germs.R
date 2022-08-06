@@ -2,13 +2,15 @@
 
 suppressPackageStartupMessages(library(optparse))
 
-option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "character", help = "Input FASTA file with sequences)"),
+option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "character", help = "Input FASTA file with sequences"),
                     make_option(c("-k", "--k_length"), action = "store", type = "integer", help = "k-mer length [default: %default]", default = 5),
                     make_option(c("-w", "--window_size"), action = "store", type = "integer", help = "Window size [default: %default]", default = 123),
                     make_option(c("-s", "--smoothing_size"), action = "store", type = "integer", help = "Smoothing window size [default: %default]", default = 123),
                     make_option(c("-o", "--output"), action = "store", type = "character", help = "Output filename"),
-                    make_option(c("-t", "--threads"), action = "store", type = "integer", help = "Number of threads [default : %default]", default = 4),
-                    make_option(c("-l", "--logging"), action = "store", type = "character", help = "Logging level [default : %default]", default = "INFO"))
+                    make_option(c("-t", "--transcripts"), action = "store", type = "character", help = "Either a comma-separated list of sequence names or a text file with one sequence name per line to plot"),
+                    make_option(c("-p", "--plot_folder"), action = "store", type = "character", help = "Folder in which to output plots [default: %default]", default = "plots"),
+                    make_option(c("-c", "--cores"), action = "store", type = "integer", help = "Number of cores [default: %default]", default = 4),
+                    make_option(c("-l", "--logging"), action = "store", type = "character", help = "Logging level [default: %default]", default = "INFO"))
 
 opt_parser = OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
@@ -22,8 +24,10 @@ suppressPackageStartupMessages(library(logger))
 #             k_length = 5,
 #             window_size = 122,
 #             smoothing_size = 122,
+#             transcripts = "transcripts.txt",
+#             plot_folder = "plots",
 #             output = "output.tsv.gz",
-#             threads = 4,
+#             cores = 4,
 #             logging = "INFO")
 
 # Parameters --------------------------------------------------------------
@@ -53,13 +57,17 @@ if(opt$smoothing_size %% 2 == 0) {
 
 message()
 logger::log_info("Logging level             : {opt$logging}")
-logger::log_info("Number of threads         : {opt$threads}")
+logger::log_info("Number of cores           : {opt$cores}")
 message()
 logger::log_info("Input FASTA file          : {opt$fasta}")
 logger::log_info("k-mer length              : {opt$k_length}")
 logger::log_info("Multivalency window size  : {opt$window_size}")
 logger::log_info("Smoothing window size     : {opt$smoothing_size}")
 logger::log_info("Output TSV filename       : {opt$output}")
+if(!is.null(opt$transcripts)) {
+  logger::log_info("Transcripts to plot       : {opt$transcripts}")
+  logger::log_info("Plot folder               : {opt$plot_folder}")
+}
 message()
 
 # Build scoring matrices -----------------------------------------
@@ -86,7 +94,7 @@ sequences <- sequences[nchar(sequences) >= opt$window_size]
 #                                                              opt$window_size,
 #                                                              hdm,
 #                                                              pdv))
-# }, mc.cores = opt$threads)
+# }, mc.cores = opt$cores)
 # toc()
 
 # all_smoothed_multivalency <- list_sliding_means(all_kmer_multivalency, opt$smoothing_size)
@@ -124,12 +132,41 @@ all_kmer_multivalency <- mclapply(seq_along(sequences), function(i) {
                                                              opt$smoothing_size,
                                                              hdm,
                                                              pdv))
-  }, mc.cores = opt$threads)
-output.df <- data.table::rbindlist(all_kmer_multivalency)
+  }, mc.cores = opt$cores)
+output.dt <- data.table::rbindlist(all_kmer_multivalency)
 # toc()
 
 logger::log_info("Writing out k-mer multivalencies")
-data.table::fwrite(output.df, file = opt$output, sep = "\t")
+data.table::fwrite(output.dt, file = opt$output, sep = "\t")
+
+# ==========
+# Plotting
+# ==========
+
+message()
+logger::log_info("Plotting")
+
+if(!dir.exists(opt$plot_folder)) {
+  logger::log_info("Plot folder does not exist, creating it")
+  dir.create(opt$plot_folder)
+}
+
+if(file.exists(opt$transcripts)) {
+  tx.v <- readLines(opt$transcripts)
+} else {
+  tx.v <- strsplit(opt$transcripts, ",")[[1]]
+}
+
+invisible(lapply(tx.v, function(x) {
+
+  logger::log_info(paste("Plotting", x))
+  plot_kmer_multivalency(kmer_multivalency.dt = output.dt,
+                         k_len = opt$k_length,
+                         seq = sequences,
+                         seq_name = x,
+                         outdir = opt$plot_folder)
+
+}))
 
 message()
 logger::log_info("Finished")
