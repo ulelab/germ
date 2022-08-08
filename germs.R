@@ -34,7 +34,6 @@ suppressPackageStartupMessages(library(logger))
 logger::log_threshold(opt$logging)
 logger::log_info("Started")
 
-message()
 if(is.null(opt$fasta)) {
   logger::log_fatal("Please specify an input FASTA file with --fasta")
   quit()
@@ -143,31 +142,35 @@ data.table::fwrite(output.dt, file = opt$output, sep = "\t")
 # Plotting
 # ==========
 
-message()
-logger::log_info("Plotting")
+if(!is.null(opt$transcripts)) {
 
-if(!dir.exists(opt$plot_folder)) {
-  logger::log_info("Plot folder does not exist, creating it")
-  dir.create(opt$plot_folder)
+  message()
+  logger::log_info("Plotting")
+
+  if(!dir.exists(opt$plot_folder)) {
+    logger::log_info("Plot folder does not exist, creating it")
+    dir.create(opt$plot_folder)
+  }
+
+  if(file.exists(opt$transcripts)) {
+    tx.v <- readLines(opt$transcripts)
+  } else {
+    tx.v <- strsplit(opt$transcripts, ",")[[1]]
+  }
+
+  invisible(lapply(tx.v, function(x) {
+
+    logger::log_info(paste("Plotting", x))
+    plot_kmer_multivalency(kmer_multivalency.dt = output.dt,
+                          k_len = opt$k_length,
+                          seq = sequences,
+                          seq_name = x,
+                          outdir = opt$plot_folder,
+                          annotate_max = TRUE)
+
+  }))
+
 }
-
-if(file.exists(opt$transcripts)) {
-  tx.v <- readLines(opt$transcripts)
-} else {
-  tx.v <- strsplit(opt$transcripts, ",")[[1]]
-}
-
-invisible(lapply(tx.v, function(x) {
-
-  logger::log_info(paste("Plotting", x))
-  plot_kmer_multivalency(kmer_multivalency.dt = output.dt,
-                         k_len = opt$k_length,
-                         seq = sequences,
-                         seq_name = x,
-                         outdir = opt$plot_folder,
-                         annotate_max = TRUE)
-
-}))
 
 message()
 logger::log_info("Finished")
