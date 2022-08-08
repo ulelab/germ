@@ -5,7 +5,6 @@
 #' @return scaled distance integer vector
 #' @export
 #'
-#' @examples
 create_positional_distance_vector <- function(window_size, k_len){
 
   middle_window <- ceiling(window_size / 2)

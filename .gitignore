@@ -7,3 +7,5 @@ src/*.so
 src/*.dll
 
 .DS_Store
+output.tsv.gz
+plots

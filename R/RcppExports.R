@@ -40,6 +40,33 @@ list_kmer_multivalencies <- function(ins, k_len, window_size, hamming_distances,
     .Call(`_germs_list_kmer_multivalencies`, ins, k_len, window_size, hamming_distances, positional_distances)
 }
 
+#' Calculates sliding mean and pads ends with 0
+#'
+#' @param iv numeric vector
+#' @param ws sliding window size
+#'
+#' @return numeric vector of sliding means padded with 0
+#' @export
+calculate_padded_sliding_mean <- function(iv, ws) {
+    .Call(`_germs_calculate_padded_sliding_mean`, iv, ws)
+}
+
+#' Calculates k-mer multivalencies with tidy output
+#'
+#' @param input_seq sequence string
+#' @param input_seq_name sequence string name (e.g. transcript id)
+#' @param k_len an integer specifying the length of the k-mer
+#' @param window_size integer specifying window_size
+#' @param smoothing size integer specifying smoothingwindow_size
+#' @param hamming_distances the Hamming distance matrix
+#' @param positional_distances the positional distance vector
+#'
+#' @return a data frame of k-mer multivalencies
+#' @export
+calculate_kmer_multivalencies_df <- function(input_seq, input_seq_name, k_len, window_size, smoothing_size, hamming_distances, positional_distances) {
+    .Call(`_germs_calculate_kmer_multivalencies_df`, input_seq, input_seq_name, k_len, window_size, smoothing_size, hamming_distances, positional_distances)
+}
+
 #' Calculates sliding mean
 #'
 #' @param iv numeric vector

@@ -9,7 +9,6 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    Rcpp,
-    magrittr
+    Rcpp, ggplot2
 LinkingTo: Rcpp
 RoxygenNote: 7.2.1
