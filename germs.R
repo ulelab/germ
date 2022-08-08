@@ -1,6 +1,12 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library(optparse))
+default.repo <- "https://cloud.r-project.org"
+
+if(!library("optparse", logical.return = TRUE, quietly = TRUE)) {
+  message("Installing optparse")
+  install.packages("optparse", repos = default.repo)
+  suppressPackageStartupMessages(library(optparse))
+}
 
 option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "character", help = "Input FASTA file with sequences"),
                     make_option(c("-k", "--k_length"), action = "store", type = "integer", help = "k-mer length [default: %default]", default = 5),
@@ -15,10 +21,27 @@ option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "ch
 opt_parser = OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
+# ==========
+# Auto-detect and install packages if needed
+# ==========
+
+if(!library("parallel", logical.return = TRUE, quietly = TRUE)) {
+  message("Installing parallel")
+  install.packages("parallel", repos = default.repo)
+  suppressPackageStartupMessages(library(parallel))
+}
+
+if(!library("logger", logical.return = TRUE, quietly = TRUE)) {
+  message("Installing logger")
+  install.packages("logger", repos = default.repo)
+  suppressPackageStartupMessages(library(logger))
+}
+
+
 suppressPackageStartupMessages(library(germs))
 suppressPackageStartupMessages(library(Biostrings))
-suppressPackageStartupMessages(library(parallel))
-suppressPackageStartupMessages(library(logger))
+# suppressPackageStartupMessages(library(parallel))
+# suppressPackageStartupMessages(library(logger))
 
 # opt <- list(fasta = "test_data/test.fasta",
 #             k_length = 5,
