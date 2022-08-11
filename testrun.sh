@@ -1,3 +1,7 @@
 #!/bin/bash
 
+# Test run for standard sequences
 Rscript germs.R -f test_data/test.fasta -o output.tsv.gz -w 122 -s 122 -t transcripts.txt -p plots
+
+# Test run for sequences non-standard characters
+Rscript germs.R -f test_data/test_nonstdchars.fasta -o output_nonstdchars.tsv.gz -w 122 -s 122
