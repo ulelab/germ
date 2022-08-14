@@ -55,7 +55,7 @@ if(opt$smoothing_size %% 2 == 0) {
 }
 
 if(is.null(opt$output)) {
-  opt$output <- paste0(strsplit(basename(opt$fasta), ".fa")[[1]][1], "_", opt$window_size, "_", opt$smoothing_size, ".tsv.gz")
+  opt$output <- paste0(strsplit(basename(opt$fasta), ".fa")[[1]][1], "_", opt$k_length,"_", opt$window_size, "_", opt$smoothing_size, ".multivalency.tsv.gz")
   logger::log_warn("No output filename provided. Generating automatic output name in current directory. You can specify an output TSV filename with --output")
 }
 
