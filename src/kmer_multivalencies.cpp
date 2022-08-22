@@ -49,6 +49,17 @@ NumericVector calculate_kmer_multivalencies(std::string input_seq, int k_len, in
 
   match_kmers = match(input_kmers, hd_kmers);
 
+  // If there are unexpected characters in the input sequence, the match function returns a negative value.
+  // We can set these values to the index of the N kmer, so that they will be counted as 0 when we score the multivalency.
+  int hd_dim = pow(4, k_len) + 1; // Dimensions of the Hamming distance matrix (including N kmer)
+
+  for (int i = 0; i < num_kmers; ++i) {
+  	if (match_kmers[i] < 0) {
+  	match_kmers[i] = hd_dim;
+  	}
+  }
+
+
   // Remember that R indexes from 1, not 0, so the input_kmers are 1 larger than their index in the Hamming distance matrix.
 
   // Initialise an output vector. The output vector should be the size of the input k-mers before N-padding.
@@ -65,7 +76,7 @@ NumericVector calculate_kmer_multivalencies(std::string input_seq, int k_len, in
   double score;
 
   // Pad the input kmer indices with the index that corresponds to the N-kmer (to permit calculation of edges).
-  int hd_dim = pow(4, k_len) + 1;
+  // int hd_dim = pow(4, k_len) + 1;
 
   NumericVector padded_kmers(match_kmers.size() + (2 * central_kmer));
 
@@ -206,6 +217,17 @@ DataFrame calculate_kmer_multivalencies_df(std::string input_seq, std::string in
 
   match_kmers = match(input_kmers, hd_kmers);
 
+  // If there are unexpected characters in the input sequence, the match function returns a negative value.
+  // We can set these values to the index of the N kmer, so that they will be counted as 0 when we score the multivalency.
+  int hd_dim = pow(4, k_len) + 1; // Dimensions of the Hamming distance matrix (including N kmer)
+
+  for (int i = 0; i < num_kmers; ++i) {
+  	if (match_kmers[i] < 0) {
+  	match_kmers[i] = hd_dim;
+  	}
+  }
+
+
   // Remember that R indexes from 1, not 0, so the input_kmers are 1 larger than their index in the Hamming distance matrix.
 
   // Initialise an output vector. The output vector should be the size of the input k-mers before N-padding.
@@ -222,7 +244,7 @@ DataFrame calculate_kmer_multivalencies_df(std::string input_seq, std::string in
   double score;
 
   // Pad the input kmer indices with the index that corresponds to the N-kmer (to permit calculation of edges).
-  int hd_dim = pow(4, k_len) + 1;
+  // int hd_dim = pow(4, k_len) + 1;
 
   NumericVector padded_kmers(match_kmers.size() + (2 * central_kmer));
 

@@ -20,11 +20,11 @@ suppressPackageStartupMessages(library(Biostrings))
 suppressPackageStartupMessages(library(parallel))
 suppressPackageStartupMessages(library(logger))
 
-# opt <- list(fasta = "test_data/test.fasta",
+# opt <- list(fasta = "test_data/test_nonstdchars.fasta",
 #             k_length = 5,
 #             window_size = 122,
 #             smoothing_size = 122,
-#             transcripts = "transcripts.txt",
+#             transcripts = "transcripts_nonstdchars.txt",
 #             plot_folder = "plots",
 #             output = "output.tsv.gz",
 #             cores = 4,
@@ -39,10 +39,10 @@ if(is.null(opt$fasta)) {
   quit()
 }
 
-if(is.null(opt$output)) {
-  logger::log_fatal("Please specify an output TSV filename with --output")
-  quit()
-}
+# if(is.null(opt$output)) {
+#   logger::log_fatal("Please specify an output TSV filename with --output")
+#   quit()
+# }
 
 if(opt$window_size %% 2 == 0) {
   opt$window_size = opt$window_size + 1
@@ -52,6 +52,11 @@ if(opt$window_size %% 2 == 0) {
 if(opt$smoothing_size %% 2 == 0) {
   opt$smoothing_size = opt$smoothing_size + 1
   logger::log_warn("Incrementing smoothing size by 1 to {opt$smoothing_size} satisfy parity requirements.") # smoothing_size must be odd!
+}
+
+if(is.null(opt$output)) {
+  opt$output <- paste0(strsplit(basename(opt$fasta), ".fa")[[1]][1], "_", opt$k_length,"_", opt$window_size, "_", opt$smoothing_size, ".multivalency.tsv.gz")
+  logger::log_warn("No output filename provided. Generating automatic output name in current directory. You can specify an output TSV filename with --output")
 }
 
 message()
@@ -132,11 +137,16 @@ all_kmer_multivalency <- mclapply(seq_along(sequences), function(i) {
                                                              hdm,
                                                              pdv))
   }, mc.cores = opt$cores)
+
+
+
 output.dt <- data.table::rbindlist(all_kmer_multivalency)
 # toc()
 
+stopifnot(length(sequences) == length(unique(output.dt$sequence_name))) # check in case one of the cores does not deliver results
+
 logger::log_info("Writing out k-mer multivalencies")
-data.table::fwrite(output.dt, file = opt$output, sep = "\t")
+data.table::fwrite(output.dt, file = opt$output, sep = "\t", nThread = opt$cores)
 
 # ==========
 # Plotting
