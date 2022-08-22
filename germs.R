@@ -20,11 +20,11 @@ suppressPackageStartupMessages(library(Biostrings))
 suppressPackageStartupMessages(library(parallel))
 suppressPackageStartupMessages(library(logger))
 
-# opt <- list(fasta = "test_data/test.fasta",
+# opt <- list(fasta = "test_data/test_nonstdchars.fasta",
 #             k_length = 5,
 #             window_size = 122,
 #             smoothing_size = 122,
-#             transcripts = "transcripts.txt",
+#             transcripts = "transcripts_nonstdchars.txt",
 #             plot_folder = "plots",
 #             output = "output.tsv.gz",
 #             cores = 4,
@@ -146,7 +146,7 @@ output.dt <- data.table::rbindlist(all_kmer_multivalency)
 stopifnot(length(sequences) == length(unique(output.dt$sequence_name))) # check in case one of the cores does not deliver results
 
 logger::log_info("Writing out k-mer multivalencies")
-data.table::fwrite(output.dt, file = opt$output, sep = "\t")
+data.table::fwrite(output.dt, file = opt$output, sep = "\t", nThread = opt$cores)
 
 # ==========
 # Plotting
