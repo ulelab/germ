@@ -5,7 +5,7 @@
 #' @return scaled Hamming distance matrix
 #' @export
 #'
-create_hamming_distance_matrix <- function(k_len, scale_fun = function(x) { 1/(1+(x^3)) }) {
+create_hamming_distance_matrix <- function(k_len, lambda = 1, scale_fun = function(x) { 1/(1+(x^3)) }) {
 
   # Generate all k-mers.
   nts <- c("A", "C", "G", "T")
@@ -37,7 +37,10 @@ create_hamming_distance_matrix <- function(k_len, scale_fun = function(x) { 1/(1
   # This scoring becomes more meaningless as k becomes small?
   # Tweak me if using larger values?
   # scaled_hamming_matrix <- 1/(1 + (hamming_matrix ^ 3))
-  if(is.null(scale_fun)) {
+  if(!is.null(lambda)) {
+    .scale_fun <- function(x) exp(-lambda * x)
+    scaled_hamming_matrix <- .scale_fun(hamming_matrix)
+  } else if(is.null(scale_fun)) {
     scaled_hamming_matrix <- hamming_matrix
   } else {
     scaled_hamming_matrix <- scale_fun(hamming_matrix)
