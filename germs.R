@@ -4,6 +4,8 @@ suppressPackageStartupMessages(library(optparse))
 
 option_list <- list(make_option(c("-f", "--fasta"), action = "store", type = "character", help = "Input FASTA file with sequences"),
                     make_option(c("-k", "--k_length"), action = "store", type = "integer", help = "k-mer length [default: %default]", default = 5),
+                    make_option(c("", "--lambda"), action = "store", type = "integer", help = "lambda for exponential decay scaling [default: %default]", default = 1),
+                    make_option(c("", "--scaling_function"), action = "store", type = "character", help = "Custom scaling function e.g. '1/(1+(x^3))' [default: %default]", default = NULL),
                     make_option(c("-w", "--window_size"), action = "store", type = "integer", help = "Window size [default: %default]", default = 123),
                     make_option(c("-s", "--smoothing_size"), action = "store", type = "integer", help = "Smoothing window size [default: %default]", default = 123),
                     make_option(c("-o", "--output"), action = "store", type = "character", help = "Output filename"),
@@ -65,6 +67,14 @@ logger::log_info("Number of cores           : {opt$cores}")
 message()
 logger::log_info("Input FASTA file          : {opt$fasta}")
 logger::log_info("k-mer length              : {opt$k_length}")
+if(!is.null(opt$lambda)) {
+  logger::log_info("lambda                    : {opt$lambda}")
+  f.log <- paste0("exp(-", opt$lambda, "*x)")
+  logger::log_info("Scaling function          : {f.log}")
+}
+if(!is.null(opt$scaling_function)) {
+  logger::log_info("Scaling function          : {opt$scaling_function}")
+}
 logger::log_info("Multivalency window size  : {opt$window_size}")
 logger::log_info("Smoothing window size     : {opt$smoothing_size}")
 logger::log_info("Output TSV filename       : {opt$output}")
@@ -76,7 +86,21 @@ message()
 
 # Build scoring matrices -----------------------------------------
 logger::log_info("Building scoring matrices")
-hdm <- create_hamming_distance_matrix(opt$k_length)
+
+if(!is.null(opt$lambda)) {
+  f <- function(x) exp(-opt$lambda * x)
+} else if(!is.null(opt$scaling_function)) {
+  eval(parse(text = paste0("f <- function(x) ", opt$scaling_function)))
+} else {
+  f <- NULL
+}
+
+# Hamming scores
+v <- vapply(0:opt$k_length, f, numeric(1))
+scaled.v <- (v - min(v))/(max(v) - min(v))
+logger::log_info("Scaled Hamming: {0:5} = {round(scaled.v, 3)}")
+
+hdm <- create_hamming_distance_matrix(opt$k_length, lambda = opt$lambda, scale_fun = f)
 pdv <- create_positional_distance_vector(opt$window_size, opt$k_length)
 
 # Load sequences ----------------------------------------------------------
