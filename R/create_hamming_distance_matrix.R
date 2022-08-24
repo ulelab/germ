@@ -1,6 +1,8 @@
 #' Creates a matrix of Hamming distances between all k-mers
 #'
 #' @param k_len an integer specifying the length of the k-mer
+#' @param lambda an integer specifying the lambda for the exponential decay function. Set to NULL to use custom scale function
+#' @param scale_fun a function specifying the scaling function. Set to NULL to return the raw distances
 #'
 #' @return scaled Hamming distance matrix
 #' @export

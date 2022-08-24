@@ -4,10 +4,20 @@
 \alias{create_hamming_distance_matrix}
 \title{Creates a matrix of Hamming distances between all k-mers}
 \usage{
-create_hamming_distance_matrix(k_len)
+create_hamming_distance_matrix(
+  k_len,
+  lambda = 1,
+  scale_fun = function(x) {
+     1/(1 + (x^3))
+ }
+)
 }
 \arguments{
 \item{k_len}{an integer specifying the length of the k-mer}
+
+\item{lambda}{an integer specifying the lambda for the exponential decay function. Set to NULL to use custom scale function}
+
+\item{scale_fun}{a function specifying the scaling function. Set to NULL to return the raw distances}
 }
 \value{
 scaled Hamming distance matrix
