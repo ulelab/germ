@@ -1,11 +1,13 @@
 #' Creates a matrix of Hamming distances between all k-mers
 #'
 #' @param k_len an integer specifying the length of the k-mer
+#' @param lambda an integer specifying the lambda for the exponential decay function. Set to NULL to use custom scale function
+#' @param scale_fun a function specifying the scaling function. Set to NULL to return the raw distances
 #'
 #' @return scaled Hamming distance matrix
 #' @export
 #'
-create_hamming_distance_matrix <- function(k_len) {
+create_hamming_distance_matrix <- function(k_len, lambda = 1, scale_fun = function(x) { 1/(1+(x^3)) }) {
 
   # Generate all k-mers.
   nts <- c("A", "C", "G", "T")
@@ -36,11 +38,20 @@ create_hamming_distance_matrix <- function(k_len) {
 
   # This scoring becomes more meaningless as k becomes small?
   # Tweak me if using larger values?
-  scaled_hamming_matrix <- 1/(1 + (hamming_matrix ^ 3))
+  # scaled_hamming_matrix <- 1/(1 + (hamming_matrix ^ 3))
+  if(!is.null(lambda)) {
+    .scale_fun <- function(x) exp(-lambda * x)
+    scaled_hamming_matrix <- .scale_fun(hamming_matrix)
+  } else if(is.null(scale_fun)) {
+    scaled_hamming_matrix <- hamming_matrix
+  } else {
+    scaled_hamming_matrix <- scale_fun(hamming_matrix)
+  }
 
   #Adjust the weights so that min = 0, max = 1.
   scaled_hamming_matrix <- scaled_hamming_matrix - min(scaled_hamming_matrix)
-  scaled_hamming_matrix <- scaled_hamming_matrix * (1 / max(scaled_hamming_matrix))
+  # scaled_hamming_matrix <- scaled_hamming_matrix * (1 / max(scaled_hamming_matrix))
+  scaled_hamming_matrix <- scaled_hamming_matrix/max(scaled_hamming_matrix)
 
   scaled_hamming_matrix[dim(scaled_hamming_matrix)[1], dim(scaled_hamming_matrix)[1]] <- 0 # make N k-mer = 0 against itself.
 
