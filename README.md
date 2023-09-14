@@ -75,6 +75,8 @@ To test the installation has worked you can run the test script. This runs three
 bash testrun.sh
 ```
 
+The test script should take 1-2 minutes to run, and should output test plots (in the `plots` and `plots_nonstdchars` directories) as well as a sample table of k-mer multivalencies (`test_5_123_123.multivalency.tsv.gz` and `output_nonstdchars.tsv.gz` in the working directory).
+
 ## Quickstart
 
 GeRM can be run from the command line using:
