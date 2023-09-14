@@ -29,7 +29,9 @@ For more details please see the _Methods_ section of the manuscript.
 
 ## Installation
 
-To install GeRM, first clone the repository to your local computer with
+Installation has been tested using Mac OS Ventura 13.5.2 and CentOS Linux 7 Core. GeRM requires only a standard desktop computer or laptop, but the RAM requirements will scale with the lenth of the input sequences.
+
+To install GeRM, first clone the repository to your local computer with:
 ```
 git clone https://github.com/ulelab/germ.git
 ```
@@ -49,9 +51,11 @@ You can then activate the environment using:
 conda activate germs
 ```
 
+The environment should take approximately 10 minutes to build.
+
 ### 2. R option
 
-GeRM requires R to be installed on your system and uses some R (`optparse`, `devtools`, `data.table`, `tidyverse`, `scales`, `ggthemes`, `cowplot`, `patchwork`, `logger`) and Bioconductor packages (`Biostrings`). If you have R already installed, you can install the GeRM R package by moving to the directory into which you cloned GeRM and then run:
+GeRM requires R to be installed on your system (tested with R 4.1.2 and 4.2.0) and uses some R (`optparse`, `devtools`, `data.table`, `tidyverse`, `scales`, `ggthemes`, `cowplot`, `patchwork`, `logger`) and Bioconductor packages (`Biostrings`). If you have R already installed, you can install the GeRM R package by moving to the directory into which you cloned GeRM and then run:
 
 ```
 R -e 'devtools:install()'
