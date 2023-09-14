@@ -53,12 +53,14 @@ conda activate germs
 
 The environment should take approximately 10 minutes to build.
 
+>Note: the environment creation has failed in one case due to old GCC compiler versions (<= 11) being pointed to in the R Makefile. If you receive error messages such as `g++-11: warning: could not understand version 13.05.00`, you may need to update your Makefile paths to point to a more recent compiler (e.g. GCC 12).
+
 ### 2. R option
 
-GeRM requires R to be installed on your system (tested with R 4.1.2 and 4.2.0) and uses some R (`optparse`, `devtools`, `data.table`, `tidyverse`, `scales`, `ggthemes`, `cowplot`, `patchwork`, `logger`) and Bioconductor packages (`Biostrings`). If you have R already installed, you can install the GeRM R package by moving to the directory into which you cloned GeRM and then run:
+GeRM requires R to be installed on your system (tested with R 4.1.2 and 4.2.0) and uses some R (`optparse`, `devtools`, `data.table`, `tidyverse`, `scales`, `ggthemes`, `cowplot`, `patchwork`, `logger`) and Bioconductor packages (`Biostrings`). If you have already installed R and these dependencies, you can install the GeRM R package by moving to the directory into which you cloned GeRM and then run:
 
 ```
-R -e 'devtools:install()'
+R -e 'devtools::install()'
 ```
 
 ### 3. Docker option
@@ -82,6 +84,8 @@ Rscript germs.R --help
 ```
 
 This will output the help for all the parameters that can be supplied to GeRM. The minimum is to provide a FASTA file with sequences for which to calculate GeRM scores (`--fasta`, `-f`)
+
+The germs.R file also serves of an example of how you can implement GeRM in to your own R scripts.
 
 ## Parameters
 
